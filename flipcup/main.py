@@ -11,6 +11,9 @@ small_font = pygame.font.SysFont("Century", 18)
 background_image = pygame.image.load("piwo.jpg").convert()
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 flip_sound = pygame.mixer.Sound("flip.mp3")
+message_start_time = None
+message_side = None
+message_duration = 2000
 
 WHITE = (255, 255, 255)
 RED = (220, 50, 50)
@@ -150,22 +153,34 @@ def draw_mug(x, y, sips_taken=0):
     )
 
 def show_player_change_message(side):
+    global message_start_time, message_side
+    message_start_time = pygame.time.get_ticks()
+    message_side = side
+    flip_sound.play()
+
+def draw_message():
+    if message_start_time is None:
+        return  # brak wiadomości do wyświetlenia
+
+    elapsed = pygame.time.get_ticks() - message_start_time
+    if elapsed > message_duration:
+        # czas minął, przestań wyświetlać wiadomość
+        return
+
     message = "Flip udany! Kolejny gracz!"
     message_surface = font.render(message, True, BLACK)
     message_rect = message_surface.get_rect()
 
-    if side =="left":
-        rect = pygame.Rect(0, 0, WIDTH //2, HEIGHT)
+    if message_side == "left":
+        rect = pygame.Rect(0, 0, WIDTH // 2, HEIGHT)
         message_rect.center = (WIDTH // 4, HEIGHT // 2)
     else:
-        rect = pygame.Rect(WIDTH //2, 0, WIDTH // 2, HEIGHT)
-        message_rect.center = (WIDTH*3 // 4, HEIGHT // 2)
+        rect = pygame.Rect(WIDTH // 2, 0, WIDTH // 2, HEIGHT)
+        message_rect.center = (WIDTH * 3 // 4, HEIGHT // 2)
 
-    flip_sound.play()
     screen.fill(WHITE, rect)
     screen.blit(message_surface, message_rect)
     pygame.display.update(rect)
-    pygame.time.delay(2000)  # 2 sekundy
 
 def show_instruction_popup():
     popup = pygame.Rect(200, 150, 600, 300)
@@ -335,6 +350,7 @@ def main(team_a_name="A", team_l_name="L", cups_per_player=4):
             draw_end(f"Wygrała Drużyna {team_l_name} grająca po prawej!")
             game_over = True
 
+        draw_message()
         pygame.display.flip()
         clock.tick(60)
 
