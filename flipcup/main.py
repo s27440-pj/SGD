@@ -47,7 +47,7 @@ class Player:
         self.bar_x = WIDTH // 4 - BAR_WIDTH // 2 if side == 'left' else WIDTH * 3 // 4 - BAR_WIDTH // 2
         self.bar_y = BAR_Y
         self.zone_center = self.bar_x + BAR_WIDTH // 2
-        self.zone_start = self.zone_center - FLIP_ZONE_WIDTH // 2
+        self.zone_flip = self.zone_center - FLIP_ZONE_WIDTH // 2
 
         self.marker_pos = self.bar_x
         self.marker_dir = FLIP_SPEED
@@ -64,12 +64,12 @@ class Player:
                 self.marker_dir *= -1
 
     def check_flip(self):
-        return self.zone_start <= self.marker_pos <= self.zone_start + FLIP_ZONE_WIDTH
+        return self.zone_flip <= self.marker_pos <= self.zone_flip + FLIP_ZONE_WIDTH
 
     def draw(self):
         # Pasek i strefa trafienia
         pygame.draw.rect(screen, GRAY, (self.bar_x, self.bar_y, BAR_WIDTH, BAR_HEIGHT))
-        pygame.draw.rect(screen, GREEN, (self.zone_start, self.bar_y, FLIP_ZONE_WIDTH, BAR_HEIGHT))
+        pygame.draw.rect(screen, GREEN, (self.zone_flip, self.bar_y, FLIP_ZONE_WIDTH, BAR_HEIGHT))
 
         if self.flipping:
             color = RED if self.side == 'left' else BLUE
@@ -79,7 +79,7 @@ class Player:
         label = f"{self.key}: {'Flip!' if self.flipping else f'Pij ({self.presses}/{DRINK_REQUIRED_PRESSES})'}"
         screen.blit(font.render(label, True, BLACK), (x_text, 100))
 
-        cups = f"Gracz: {self.drinks_done}/{CUPS_PER_PLAYER}"
+        cups = f"Gracz: {self.drinks_done + 1}/{CUPS_PER_PLAYER}"
         screen.blit(font.render(cups, True, BLACK), (x_text, 140))
 
 class Button:
