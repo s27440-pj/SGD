@@ -106,14 +106,18 @@ class InputBox:
         self.active = False
 
     def handle_event(self, event):
+        # zaczynam pisać
         if event.type == pygame.MOUSEBUTTONDOWN:
             self.active = self.rect.collidepoint(event.pos)
         if event.type == pygame.KEYDOWN and self.active:
+            # enter kończy aktywność pola
             if event.key == pygame.K_RETURN:
                 self.active = False
+            # usuwa znak
             elif event.key == pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
             else:
+                # dopisuje znak
                 self.text += event.unicode
             self.txt_surface = font.render(self.text, True, self.color)
 
@@ -164,7 +168,6 @@ def draw_message():
 
     elapsed = pygame.time.get_ticks() - message_start_time
     if elapsed > message_duration:
-        # czas minął, przestań wyświetlać wiadomość
         return
 
     message = "Flip udany! Kolejny gracz!"
@@ -209,6 +212,7 @@ def show_instruction_popup():
             txt = small_font.render(line, True, BLACK)
             screen.blit(txt, (popup.x + 20, popup.y + 20 + i * 30))
         ok_button.draw()
+        # odświeża ekran
         pygame.display.flip()
         clock.tick(30)
 
@@ -274,6 +278,7 @@ def main_menu():
                     pygame.quit()
                 elif new_game_btn.is_clicked(event.pos):
                     team_a, team_l, players_num = show_game_start()
+                    # jak funkcja show_game_start() zwróci nam parametry to z nimi zaczynamy gre
                     main(team_a, team_l, players_num)
 
         pygame.display.flip()
@@ -312,8 +317,6 @@ def main(team_a_name="A", team_l_name="L", cups_per_player=4):
                             player_a.presses = 0
                             if player_a.drinks_done < cups_per_player:
                                 show_player_change_message("left")
-                        else: # odbicie
-                            player_a.marker_dir *= -1
 
                 # Gracz prawy (l)
                 if event.key == pygame.K_l:
@@ -328,13 +331,10 @@ def main(team_a_name="A", team_l_name="L", cups_per_player=4):
                             player_l.presses = 0
                             if player_l.drinks_done < cups_per_player:
                                 show_player_change_message("right")
-                        else:
-                            player_l.marker_dir *= -1  # pudło
 
         player_a.update_flip()
         player_l.update_flip()
 
-        # Rysowanie
         pygame.draw.line(screen, BLACK, (WIDTH // 2, 0), (WIDTH // 2, HEIGHT), 2)
         player_a.draw()
         player_l.draw()
